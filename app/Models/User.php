@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -20,7 +19,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
+        'url',
+        'content',
     ];
 
     /**
@@ -29,17 +29,17 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
         'remember_token',
     ];
 
     /**
-     * The attributes that should be cast.
+     * Defines a one-to-many relationship between the User model and the Message model.
      *
-     * @var array<string, string>
+     * This method allows you to get all messages associated with a user through the foreign key user_id
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
 }
