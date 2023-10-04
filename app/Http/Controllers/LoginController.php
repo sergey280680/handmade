@@ -8,7 +8,7 @@ class LoginController extends Controller
 {
     public function index()
     {
-//        abort(403);
+        abort(403);
         return view('login.index');
     }
 
