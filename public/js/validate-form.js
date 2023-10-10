@@ -49,15 +49,18 @@ form.addEventListener('submit', function (event) {
         // Saving the message value into a variable
         var contentValue = contentInput.value;
         contentError.textContent = '';
+        console.log(11);
+        console.log(contentError.textContent);
 
         // Regular expression for HTML tags
         function containsHTMLTags(text) {
             var htmlTagPattern = /<\/?[a-z][\s\S]*>/i;
+
             return htmlTagPattern.test(text);
         }
 
         // Checking whether the value contains tags
-        var allowedTagsRegex = /^<a href="[^"]+" title="[^"]+">[^<]+<\/a>|<code>[^<]+<\/code>|<i>[^<]+<\/i>|<strong>[^<]+<\/strong>$/;
+        var allowedTagsRegex = /<\/?(?:a|code|i|strong)(?:\s+[a-z]+="[^"]+")*>[^<]+<\/(?:a|code|i|strong)>/;
 
         if (contentValue && containsHTMLTags(contentValue)) {
             if (!allowedTagsRegex.test(contentValue)) {
