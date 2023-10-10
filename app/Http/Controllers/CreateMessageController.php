@@ -5,12 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Message;
 use Illuminate\Http\Request;
-use Intervention\Image\Facades\Image;
-//use Intervention\Image\ImageManagerStatic as Image;
-
-//use Illuminate\Http\Request;
-//use App\Image;
-use Image as ImageIntervention;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class CreateMessageController extends Controller
 {
@@ -61,27 +56,29 @@ class CreateMessageController extends Controller
 
     public function store(Request $request)
     {
+
         // Image processing
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imagePath = $image->store('images', 'public');
 
-            // Resizing an Image
-            $img = Image::make(public_path('storage/' . $imagePath));
-            $img->resize(320, 240, function ($constraint) {
-                $constraint->aspectRatio(); // Proportional resizing
-            });
+            // // Resizing an Image
+             $img = Image::make(public_path('storage/' . $imagePath));
+
+             $img->resize(320, 240, function ($constraint) {
+                 $constraint->aspectRatio(); // Proportional resizing
+             });
 
             // Path to save the modified image
             $resizedImagePath = 'images/' . $image->hashName();
 
             // Save the modified image
-            $img->save(public_path('storage/' . $resizedImagePath));
+             $img->save(public_path('storage/' . $resizedImagePath));
         }
 
         $hasHtmlTags = preg_match('/<[a-z][\s\S]*>/i', $request->input('content'));
         $validationRules = $hasHtmlTags
-            ? 'regex:/^<a href="[^"]+" title="[^"]+">[^<]+<\/a>|<code>[^<]+<\/code>|<i>[^<]+<\/i>|<strong>[^<]+<\/strong>$/'
+            ? 'regex:/<a href="[^"]+"(?: title="[^"]+")?>[^<]+<\/a>|<code>[^<]+<\/code>|<i>[^<]+<\/i>|<strong>[^<]+<\/strong>|<[^>]+>/'
             : '';
 
         $validated = $request->validate([
@@ -101,7 +98,10 @@ class CreateMessageController extends Controller
         ]);
 
         if ($request->hasFile('text_file')) {
-            $textFilePath = $request->file('text_file')->store('text_files', 'public');
+            $textFilePath = $request->file('text_file')->store('text_file', 'public');
+
+            // Save the modified textFile
+            $request->file('text_file')->storeAs('public/' . $textFilePath);
         }
 
         $user = User::firstOrNew(['email' => $request->email]);
